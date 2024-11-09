@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ubiquiti
+    username: user
+    password: password
+  liquibase:
+    change-log: classpath:db/changelog.yml

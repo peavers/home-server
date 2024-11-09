@@ -1,0 +1,71 @@
+import org.jooq.meta.postgres.PostgresDatabase
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.jooq.jooq-codegen-gradle' version "3.19.14"
+}
+
+group = 'space.forloop.ubiquiti'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation("space.forloop:hue:0.0.1")
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+
+    // Http
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
+
+    // Database
+    implementation 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.postgresql:postgresql'
+    jooqCodegen 'org.postgresql:postgresql'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+jooq {
+    configuration {
+        jdbc {
+            driver = "org.postgresql.Driver"
+            url = "jdbc:postgresql://localhost:5432/ubiquiti"
+            user = "user"
+            password = "password"
+        }
+        generator {
+            database {
+                PostgresDatabase
+                inputSchema = "ubiquiti"
+                excludes = "databasechangelog|databasechangeloglock"
+            }
+            generate {}
+            target {
+                packageName = "space.forloop.ubiquiti.generated"
+                directory = "src/main/java"
+            }
+        }
+    }
+}
