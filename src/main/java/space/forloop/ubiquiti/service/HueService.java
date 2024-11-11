@@ -1,44 +1,63 @@
 package space.forloop.ubiquiti.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import space.forloop.hue.api.HueBridge;
 import space.forloop.hue.api.HueClient;
 import space.forloop.hue.api.Light;
+import space.forloop.hue.exception.HueConnectionException;
+import space.forloop.hue.exception.HueDiscoveryException;
 import space.forloop.hue.exception.HueException;
 import space.forloop.hue.model.BridgeAuthentication;
 import space.forloop.hue.model.LightState;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class HueService {
 
-    public void turnAllLightsOn() {
+    private final BridgeAuthentication bridgeAuthentication;
 
-        BridgeAuthentication authentication = new BridgeAuthentication("nlKPA666DY41rnC3w-59nT6T9U36y9Y9u9G3uY5x", null);
+    public Collection<Light> findLights(HueBridge bridge) {
+        var authBridge = bridge.authenticate(bridgeAuthentication);
 
-        // Create an instance of the client
-        HueClient client = HueClient.builder().build();
+        Collection<Light> lights;
 
-        // Find a bridge on your network
-        client.discoverBridges().stream().findFirst().ifPresent(bridge -> {
+        try {
+            lights = authBridge.getLights();
+        } catch (HueException e) {
+            throw new RuntimeException(e);
+        }
 
-            // authenticate with the bridge
-            var authBridge = bridge.authenticate(authentication);
-
-            // Do something with all the lights we can find
-            try {
-                for (Light light : authBridge.getLights()) {
-                    log.info("Changing light: {}", light.getId());
-                    light.setState(LightState
-                            .builder()
-                            .on(true)
-                            .brightness(Optional.of(254))
-                            .build());
-                }
-            } catch (HueException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        return lights;
     }
 
+    public void turnOnLight(Light light) {
+        try {
+            light.setState(LightState
+                    .builder()
+                    .on(true)
+                    .brightness(254)
+                    .build());
+        } catch (HueException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void turnOffLight(Light light) {
+        try {
+            light.setState(LightState
+                    .builder()
+                    .on(false)
+                    .brightness(0)
+                    .build());
+        } catch (HueException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

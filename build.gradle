@@ -32,15 +32,12 @@ dependencies {
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq'
-
-    // Http
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
+//    implementation 'org.springframework.boot:spring-boot-starter-jooq'
 
     // Database
-    implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql'
-    jooqCodegen 'org.postgresql:postgresql'
+//    implementation 'org.liquibase:liquibase-core'
+//    runtimeOnly 'org.postgresql:postgresql'
+//    jooqCodegen 'org.postgresql:postgresql'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
